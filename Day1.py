@@ -27,21 +27,18 @@ def secondSolve(input):
             if idx < firstidx:
                 firstidx = idx
                 first = value
-        finally:
+        except ValueError:
+            pass
 
         try:
             idx = input.rindex(key)
             if idx > lastidx:
                 lastidx = idx
                 last = value
-        finally:
-
+        except ValueError:
+            pass
 
     return int(str(first) + str(last))
-
-
-
-
 
 def doStuffOne(filenamee):
     file = open(filenamee, 'r')
@@ -70,3 +67,5 @@ def doStuffTwo(filenamee):
 
 res2 = doStuffTwo('day1-ex2.txt')
 print(res2)
+res2Act = doStuffTwo('day1-input.txt')
+print(res2Act)
