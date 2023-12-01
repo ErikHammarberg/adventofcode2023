@@ -14,10 +14,30 @@ def calculateValue( input ):
 
 def secondSolve(input):
     res = input
-    litteralmap = {"one":1, "two":2, "three": 3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9}
+    litteralmap = {"one":1, "two":2, "three": 3, "four":4,
+                   "five":5, "six":6, "seven":7, "eight":8, "nine":9,
+                   "1":1, "2":2, "3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+    firstidx = 99999999
+    first = input
+    lastidx = -1
+    last = input
     for key, value in litteralmap.items():
-        res = res.replace(key, str(value))
-    return res
+        try:
+            idx = input.index(key)
+            if idx < firstidx:
+                firstidx = idx
+                first = value
+        finally:
+
+        try:
+            idx = input.rindex(key)
+            if idx > lastidx:
+                lastidx = idx
+                last = value
+        finally:
+
+
+    return int(str(first) + str(last))
 
 
 
@@ -36,8 +56,8 @@ def doStuffTwo(filenamee):
     file = open(filenamee, 'r')
     lines = file.readlines()
 
-    changedLines = map(secondSolve, lines)
-    nums = map(calculateValue, changedLines)
+    nums = map(secondSolve, lines)
+
     #print(list(nums))
     res = functools.reduce(lambda x, y: x + y, nums)
     return res
