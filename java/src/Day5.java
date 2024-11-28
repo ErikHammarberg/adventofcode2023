@@ -17,41 +17,58 @@ seed-to-soil map:
         String[] results;
         int passStart = 3;
         for (int i = 3; i < lines.length; i++) {
-            if (lines[i].isBlank()) {
+            if (lines[i].isBlank() || i +1 == lines.length) {
                 var mapLines = Arrays.copyOfRange(lines, passStart, i);
                 passStart = i +2 ;
-                mappers.add(new Mapper(mapLines));
+                var mapperwrapper = new MapperWrapper(mapLines);
+                seeds = stepMapper(seeds, mapperwrapper);
             }
         }
-        return Arrays.stream(seeds).mapToLong(i -> giveFromMappers(mappers, i)).min().getAsLong();
+        return Arrays.stream(seeds).mapToLong(i -> i).min().getAsLong();
 
     }
 
-    long giveFromMappers(List<Mapper> mappers, long seed) {
-        return mappers.stream().reduce(seed, (interrim, map) -> map.mapper.getOrDefault(interrim, interrim), (a, b) -> b);
+
+    Long[] stepMapper (Long[] seeds, MapperWrapper mapper) {
+        return Arrays.stream(seeds).map(i -> mapper.mapValue(i)).toList().toArray(new Long[0]);
     }
 
-    long[] stepMapper (long[] seeds, Mapper mapper) {
-        return Arrays.stream(seeds).map(i -> mapper.mapper.getOrDefault(i, i)).toArray();
-    }
+    class MapperWrapper {
+        List<Mapper> mappers;
 
+        public MapperWrapper (String[] args){
+            mappers = Arrays.stream(args).map(s -> new Mapper(s)).toList();
+        }
+
+        public long mapValue(long oldValue) {
+            return mappers.stream().map(m -> m.mapValue(oldValue)).filter(i -> i > 0).findFirst().orElse(oldValue);
+        }
+    }
 
     class Mapper {
 
-        Map<Long, Long> mapper = new HashMap();
+        long sourceValBegin;
+        long destValBegin;
+        long range;
+
+
         // Dest Source Range
-        public Mapper(String[] args) {
-            for (String arg : args) {
-                var nums = parseInts(arg);
-                final long destBase = nums[0];
-                final long sourseBase = nums[1];
-                for(int i = 0; i < nums[2]; i++) {
-                    mapper.put(sourseBase + i, destBase + i);
-                }
-            }
+        public Mapper(String arg) {
+            var nums = parseInts(arg);
+            this.destValBegin = nums[0];
+            this.sourceValBegin = nums[1];
+            this.range = nums[2];
         }
 
+        public long mapValue(long oldValue) {
+            if (oldValue < sourceValBegin || oldValue > sourceValBegin + range - 1) {
+                return -666;
+            }
+            long difference = oldValue - sourceValBegin;
+            return destValBegin + difference;
+        }
     }
+
 
     public static Long[] parseInts(String args) {
         return  Arrays.stream(args.split(" ")).map(Long::parseLong).toList().toArray(new Long[0]);

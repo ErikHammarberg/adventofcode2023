@@ -54,5 +54,7 @@ class Day5Test {
         var solver = new Day5();
         var result = solver.solveOne(Day5Input.INPUT);
         System.out.println(result);
+        assertEquals(178159714 , result);
+        System.out.println(result);
     }
 }
